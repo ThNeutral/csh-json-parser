@@ -9,6 +9,7 @@ public class Parser(string source) {
     private string source = source;
     private int current = 0;
     public dynamic? ParseAny() {
+        Console.WriteLine(source);
         SkipWhitespace();
         return Value();
     }
@@ -67,7 +68,78 @@ public class Parser(string source) {
         return array;
     }
     private string String() {
-        throw new NotImplementedException();
+        Advance();
+        SkipWhitespace();
+
+        var str = "";
+        var isEscape = false;
+        while (true) {
+            if (IsAtEnd()) {
+                throw new ParseException("Unexpected end of input.");
+            }
+
+            var letter = Peek();
+            
+            if (isEscape) {
+                switch (letter) {
+                    case '"':
+                    case '\\':
+                    case '/':
+                    case 'b':
+                    case 'f':
+                    case 'n':
+                    case 'r':
+                    case 't': {
+                        str += letter;
+                        isEscape = false;
+                        Advance();
+                        continue;
+                    }
+                    case 'u': {
+                        str += Unicode();
+                        isEscape = false;
+                        continue;
+                    }
+                    default: {
+                        throw new ParseException("Unexpected escape character: '" + letter +"'");
+                    }
+                }
+            }
+
+            if (letter == '\\') {
+                isEscape = true;
+                Advance();
+                continue;    
+            }
+
+
+            if (letter == '"') {
+                Advance();
+                return str;
+            }
+
+            str += letter;
+            Advance();
+        }
+    }
+    private char Unicode() {
+        Advance();
+        var hex = "";
+        for (int i = 0; i < 4; i++) {
+            if (IsAtEnd()) {
+                throw new ParseException("Unexpected end of input.");
+            }
+
+            var next = Peek();
+            if (!char.IsAsciiHexDigit(next)) {
+                throw new ParseException("Only hex digits are allowed in unicode.");
+            }
+
+            hex += Peek();
+            Advance();
+        }
+        var unicode = int.Parse(hex, System.Globalization.NumberStyles.HexNumber);
+        return (char)unicode;
     }
     private float Number() {
         throw new NotImplementedException();    
@@ -100,7 +172,7 @@ public class Parser(string source) {
         current += 1;
     }
     private bool IsAtEnd() {
-        return current >= source.Length - 1;
+        return current >= source.Length;
     }
     private char Peek() {
         return source[current];
