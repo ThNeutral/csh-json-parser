@@ -37,16 +37,23 @@ public class Serializer(object? source) {
         }
     }
     private void Array() {
-
+        var array = (Array)current!;
+        result += "[";
+        for (var index = 0; index < array.Length; index++) {
+            if (index != 0) result += ",";
+            current = array.GetValue(index);
+            Value();
+        }
+        result += "]";
     }
     private void Number() {
-
+       result += current!.ToString();
     }
     private void Object() {
 
     }
     private void String() {
-
+        result += current!.ToString();
     }
     private bool IsNumericType(Type type) {
         return type == typeof(byte) || type == typeof(sbyte) ||
