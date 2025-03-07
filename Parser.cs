@@ -8,11 +8,12 @@ public class Parser(string source) {
     }
     private string source = source;
     private int current = 0;
-    public dynamic? ParseAny() {
+    public object? ParseAny() {
+        current = 0;
         SkipWhitespace();
         return Value();
     }
-    private dynamic? Value() {
+    private object? Value() {
         var next = Peek();
         switch(next) {
             case '{': return Object();
@@ -33,8 +34,8 @@ public class Parser(string source) {
             }
         }
     }
-    private Dictionary<string, dynamic> Object() {
-        var dict = new Dictionary<string, dynamic>();
+    private Dictionary<string, object?> Object() {
+        var dict = new Dictionary<string, object?>();
 
         Advance();
         SkipWhitespace();
