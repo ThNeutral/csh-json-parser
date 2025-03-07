@@ -1,3 +1,5 @@
+using System.Reflection;
+
 public class Serializer(object? source) {
     private object? source = source;
     private object? current = source;
@@ -50,7 +52,18 @@ public class Serializer(object? source) {
        result += current!.ToString();
     }
     private void Object() {
-
+        var obj = current;
+        var fields = current!.GetType().GetFields(BindingFlags.Public | BindingFlags.Instance);
+        result += "{";
+        for (var index = 0; index < fields.Length; index++) {
+            if (index != 0) result += ",";
+            var field = fields[index];
+            result += field.Name;
+            result += ":";
+            current = field.GetValue(obj);
+            Value();
+        }
+        result += "}";
     }
     private void String() {
         result += current!.ToString();

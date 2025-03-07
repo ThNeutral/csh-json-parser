@@ -1,3 +1,8 @@
-﻿var value = JSON.Serialize(new object?[] {12, null, true, new object?[] {123, true, null, new object?[] {123, true, null }}});
+﻿var value = JSON.Serialize(new Class());
 
 Console.WriteLine(value);
+
+class Class {
+    public int Id = 42;
+    public string Name = "Hello";   
+}
