@@ -1,5 +1,5 @@
 ﻿using System.Text.Json;
 
-var value = JSON.ParseAny("[false, true, \"null\\u0022\"]");
+var value = JSON.ParseAny("0.123e12");
 
 Console.WriteLine(JsonSerializer.Serialize(value));
